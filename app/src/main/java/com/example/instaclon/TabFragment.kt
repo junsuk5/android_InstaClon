@@ -33,9 +33,10 @@ class TabFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navHostFragment: NavHostFragment = childFragmentManager.findFragmentById(R.id.tab_nav_host_fragment) as NavHostFragment
+        val navController = (childFragmentManager.findFragmentById(R.id.tab_nav_host_fragment) as NavHostFragment).navController
+
         view.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            .setupWithNavController(navHostFragment.navController)
+            .setupWithNavController(navController)
     }
 
 
