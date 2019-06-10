@@ -38,6 +38,11 @@ class SearchFragment : Fragment() {
         adapter = PostAdapter(options)
 
         recycler_view.adapter = adapter
+
+        create_button.setOnClickListener {
+            findParentNavController()
+                ?.navigate(R.id.action_tabFragment_to_createPostFragment)
+        }
     }
 
     override fun onStart() {
