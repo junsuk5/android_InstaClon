@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion 29
@@ -70,3 +70,5 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.0'
 
 }
+
+apply plugin: 'com.google.gms.google-services'

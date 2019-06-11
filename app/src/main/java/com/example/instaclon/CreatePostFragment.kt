@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -88,18 +87,10 @@ class CreatePostFragment : Fragment() {
                 val stream = requireContext().contentResolver.openInputStream(uri)
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    // 백그라운드 처리
                     val downloadUri = viewModel.uploadImage(stream!!)
-                    Log.d("Log", "${downloadUri.toString()}")
+                    viewModel.createPost(Post("a811219@gmail.com", downloadUri.toString()))
 
-                    viewModel.createPost(
-                        Post("a811219@gmail.com", downloadUri.toString())
-                    )
-
-                    launch(Dispatchers.Main) {
-                        // UI 갱신
-                        findNavController().popBackStack()
-                    }
+                    findNavController().popBackStack()
                 }
 
             }

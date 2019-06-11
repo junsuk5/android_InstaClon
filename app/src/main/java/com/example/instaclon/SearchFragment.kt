@@ -35,7 +35,10 @@ class SearchFragment : Fragment() {
             .setQuery(query, Post::class.java)
             .build()
 
-        adapter = PostAdapter(options)
+        adapter = PostAdapter(options) { post ->
+            val action = TabFragmentDirections.actionTabFragmentToPostDetailFragment(post)
+            findParentNavController()?.navigate(action)
+        }
 
         recycler_view.adapter = adapter
 
@@ -55,7 +58,10 @@ class SearchFragment : Fragment() {
         adapter.stopListening()
     }
 
-    class PostAdapter(options: FirestoreRecyclerOptions<Post>) :
+    class PostAdapter(
+        options: FirestoreRecyclerOptions<Post>,
+        private val callback: (Post) -> Unit
+    ) :
         FirestoreRecyclerAdapter<Post, PostAdapter.PostHolder>(options) {
 
         class PostHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
@@ -68,6 +74,9 @@ class SearchFragment : Fragment() {
 
         override fun onBindViewHolder(holder: PostHolder, position: Int, model: Post) {
             holder.binding.post = model
+            holder.binding.root.setOnClickListener {
+                callback.invoke(model)
+            }
         }
 
     }
