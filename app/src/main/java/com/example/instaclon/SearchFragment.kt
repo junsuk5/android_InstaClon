@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
 import com.example.instaclon.databinding.ItemPostBinding
 import com.example.instaclon.models.Post
@@ -35,9 +36,13 @@ class SearchFragment : Fragment() {
             .setQuery(query, Post::class.java)
             .build()
 
-        adapter = PostAdapter(options) { post ->
+        adapter = PostAdapter(options) { view, post ->
+            val extras = FragmentNavigatorExtras(
+                view to "image"
+            )
+
             val action = TabFragmentDirections.actionTabFragmentToPostDetailFragment(post)
-            findParentNavController()?.navigate(action)
+            findParentNavController()?.navigate(action, extras)
         }
 
         recycler_view.adapter = adapter
@@ -60,7 +65,7 @@ class SearchFragment : Fragment() {
 
     class PostAdapter(
         options: FirestoreRecyclerOptions<Post>,
-        private val callback: (Post) -> Unit
+        private val callback: (View, Post) -> Unit
     ) :
         FirestoreRecyclerAdapter<Post, PostAdapter.PostHolder>(options) {
 
@@ -75,7 +80,7 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(holder: PostHolder, position: Int, model: Post) {
             holder.binding.post = model
             holder.binding.root.setOnClickListener {
-                callback.invoke(model)
+                callback.invoke(holder.binding.imageView, model)
             }
         }
 

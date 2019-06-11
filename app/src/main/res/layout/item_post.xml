@@ -10,9 +10,11 @@
     </data>
 
     <com.example.instaclon.SquareImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"
+        android:transitionName="image"
         bind:imageUrl2="@{post.imageUrl}" />
 </layout>
