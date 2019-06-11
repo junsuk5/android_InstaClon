@@ -8,17 +8,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import com.example.instaclon.models.Post
 import kotlinx.android.synthetic.main.fragment_create_post.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class CreatePostFragment : Fragment() {
     private val imageUri = MutableLiveData<Uri>()
+
+    private val viewModel by viewModels<CreatePostViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,6 +35,14 @@ class CreatePostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.isProgress.observe(this, Observer {
+            if (it) {
+                progressBar.visibility = View.VISIBLE
+            } else {
+                progressBar.visibility = View.GONE
+            }
+        })
 
         imageUri.observe(this, Observer { uri ->
             Glide.with(imageView)
@@ -70,23 +83,31 @@ class CreatePostFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_send) {
             // 이미지 업로드
-            imageUri.value?.let {
-                val downloadUri = uploadImage(it).task.result
-                Log.d("Log", "${downloadUri.toString()}")
+            imageUri.value?.let { uri ->
+
+                val stream = requireContext().contentResolver.openInputStream(uri)
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // 백그라운드 처리
+                    val downloadUri = viewModel.uploadImage(stream!!)
+                    Log.d("Log", "${downloadUri.toString()}")
+
+                    viewModel.createPost(
+                        Post("a811219@gmail.com", downloadUri.toString())
+                    )
+
+                    launch(Dispatchers.Main) {
+                        // UI 갱신
+                        findNavController().popBackStack()
+                    }
+                }
+
             }
 
             // 업로드 결과를 DB에 작성
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun uploadImage(uri: Uri): UploadTask.TaskSnapshot {
-        val stream = requireContext().contentResolver.openInputStream(uri)
-
-        val ref = FirebaseStorage.getInstance().reference
-            .child("images/${System.currentTimeMillis()}.jpg")
-        return Tasks.await(ref.putStream(stream!!))
     }
 
     companion object {
