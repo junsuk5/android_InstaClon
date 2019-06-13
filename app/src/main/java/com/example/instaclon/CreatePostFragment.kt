@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.instaclon.models.Post
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_create_post.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,7 +89,16 @@ class CreatePostFragment : Fragment() {
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     val downloadUri = viewModel.uploadImage(stream!!)
-                    viewModel.createPost(Post("a811219@gmail.com", downloadUri.toString()))
+                    viewModel.createPost(
+                        Post(
+                            "a811219@gmail.com",
+                            FirebaseAuth.getInstance().currentUser?.email,
+                            FirebaseAuth.getInstance().currentUser?.photoUrl?.toString(),
+
+                            downloadUri.toString(),
+                            editText.text.toString()
+                        )
+                    )
 
                     findNavController().popBackStack()
                 }

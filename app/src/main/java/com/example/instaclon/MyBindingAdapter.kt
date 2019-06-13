@@ -21,3 +21,11 @@ fun imageUrl2(view: ImageView, uri: String) {
         .placeholder(R.mipmap.ic_launcher)
         .into(view)
 }
+
+@BindingAdapter("imageUrl3")
+fun imageUrl3(view: CircleImageView, uri: String) {
+    Glide.with(view)
+        .load(uri)
+        .placeholder(R.mipmap.ic_launcher)
+        .into(view)
+}
