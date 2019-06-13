@@ -14,6 +14,8 @@ import com.google.firebase.storage.UploadTask
 import java.io.InputStream
 
 class CreatePostViewModel : ViewModel() {
+    val db = FirebaseFirestore.getInstance()
+
     val isProgress = MutableLiveData<Boolean>()
 
     init {
@@ -38,7 +40,6 @@ class CreatePostViewModel : ViewModel() {
 
     fun createPost(post: Post): DocumentReference {
         isProgress.postValue(true)
-        val db = FirebaseFirestore.getInstance()
         return Tasks.await(db.collection("insta_posts").add(post).addOnCompleteListener {
             isProgress.postValue(false)
         })
@@ -46,12 +47,20 @@ class CreatePostViewModel : ViewModel() {
 
     fun updatePost(post: Post, callback: () -> Unit) {
         isProgress.postValue(true)
-        val db = FirebaseFirestore.getInstance()
 
         db.collection("insta_posts").document(post.uid).set(post).addOnCompleteListener {
             isProgress.postValue(false)
 
             callback.invoke()
         }
+    }
+
+    fun deletePost(post: Post, callback: () -> Unit) {
+        isProgress.postValue(true)
+
+        db.collection("insta_posts").document(post.uid).delete()
+            .addOnCompleteListener {
+                callback.invoke()
+            }
     }
 }
