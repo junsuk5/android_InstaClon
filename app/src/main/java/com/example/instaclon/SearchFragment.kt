@@ -78,6 +78,8 @@ class SearchFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: PostHolder, position: Int, model: Post) {
+
+            model.uid = snapshots.getSnapshot(position).id
             holder.binding.post = model
             holder.binding.root.setOnClickListener {
                 callback.invoke(holder.binding.imageView, model)

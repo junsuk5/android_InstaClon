@@ -8,4 +8,6 @@ data class Post(
     var profileUrl: String? = "",
     var imageUrl: String = "",
     var description: String = ""
-) : Serializable
+) : Serializable {
+    var uid: String = ""
+}

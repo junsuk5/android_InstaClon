@@ -43,4 +43,15 @@ class CreatePostViewModel : ViewModel() {
             isProgress.postValue(false)
         })
     }
+
+    fun updatePost(post: Post, callback: () -> Unit) {
+        isProgress.postValue(true)
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("insta_posts").document(post.uid).set(post).addOnCompleteListener {
+            isProgress.postValue(false)
+
+            callback.invoke()
+        }
+    }
 }
