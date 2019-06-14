@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.instaclon.models.Post
 import com.google.firebase.auth.FirebaseAuth
@@ -100,7 +99,7 @@ class CreatePostFragment : Fragment() {
                         )
                     )
 
-                    findNavController().popBackStack()
+                    requireActivity().finish()
                 }
 
             }

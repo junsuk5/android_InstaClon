@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/post_detail_graph"
+    app:startDestination="@id/postDetailFragment2">
+
+    <fragment
+        android:id="@+id/postDetailFragment2"
+        android:name="com.example.instaclon.PostDetailFragment"
+        android:label="PostDetailFragment" />
+</navigation>

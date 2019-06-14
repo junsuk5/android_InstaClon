@@ -14,10 +14,31 @@
         android:id="@+id/searchFragment"
         android:name="com.example.instaclon.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_createPostActivity"
+            app:destination="@id/createPostActivity" />
+        <action
+            android:id="@+id/action_searchFragment_to_postDetailActivity"
+            app:destination="@id/postDetailActivity" />
+    </fragment>
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.example.instaclon.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
+    <activity
+        android:id="@+id/createPostActivity"
+        android:name="com.example.instaclon.CreatePostActivity"
+        android:label="activity_create_post"
+        tools:layout="@layout/activity_create_post" />
+    <activity
+        android:id="@+id/postDetailActivity"
+        android:name="com.example.instaclon.PostDetailActivity"
+        android:label="activity_post_detail"
+        tools:layout="@layout/activity_post_detail" >
+        <argument
+            android:name="post"
+            app:argType="com.example.instaclon.models.Post" />
+    </activity>
 </navigation>

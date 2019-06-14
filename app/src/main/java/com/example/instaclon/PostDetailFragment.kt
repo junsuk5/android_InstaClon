@@ -7,10 +7,8 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.transition.Explode
-import androidx.transition.TransitionInflater
+import androidx.transition.ChangeImageTransform
 import com.example.instaclon.databinding.FragmentPostDetailBinding
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.coroutines.Dispatchers
@@ -18,15 +16,13 @@ import kotlinx.coroutines.launch
 
 
 class PostDetailFragment : Fragment() {
-    private val args: PostDetailFragmentArgs by navArgs()
+    private val args: PostDetailActivityArgs by navArgs()
     private val viewModel by viewModels<CreatePostViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition = Explode()
-        sharedElementReturnTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = ChangeImageTransform()
     }
 
     override fun onCreateView(
@@ -46,14 +42,14 @@ class PostDetailFragment : Fragment() {
         binding.post = args.post
         binding.lifecycleOwner = this
 
-        description_edit.setOnEditorActionListener { textView, actionId, keyEvent ->
+        description_edit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val post = args.post
                 post.description = description_edit.text.toString()
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     viewModel.updatePost(post) {
-                        findNavController().popBackStack()
+                        requireActivity().finish()
                     }
                 }
 
@@ -72,7 +68,7 @@ class PostDetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_delete -> viewModel.deletePost(args.post) {
-                findNavController().popBackStack()
+                requireActivity().finish()
             }
         }
         return super.onOptionsItemSelected(item)

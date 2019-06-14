@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.ActivityNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.instaclon.databinding.ItemPostBinding
 import com.example.instaclon.models.Post
@@ -14,6 +16,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_search.*
+import androidx.core.util.Pair as UtilPair
 
 
 class SearchFragment : Fragment() {
@@ -37,19 +40,19 @@ class SearchFragment : Fragment() {
             .build()
 
         adapter = PostAdapter(options) { view, post ->
-            val extras = FragmentNavigatorExtras(
-                view to "image"
+            val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                UtilPair.create(view, "image")
             )
-
-            val action = TabFragmentDirections.actionTabFragmentToPostDetailFragment(post)
-            findParentNavController()?.navigate(action, extras)
+            val extras = ActivityNavigatorExtras(activityOptions)
+            val action = SearchFragmentDirections.actionSearchFragmentToPostDetailActivity(post)
+            findNavController().navigate(action, extras)
         }
 
         recycler_view.adapter = adapter
 
         create_button.setOnClickListener {
-            findParentNavController()
-                ?.navigate(R.id.action_tabFragment_to_createPostFragment)
+            findNavController().navigate(R.id.action_searchFragment_to_createPostActivity)
         }
     }
 
