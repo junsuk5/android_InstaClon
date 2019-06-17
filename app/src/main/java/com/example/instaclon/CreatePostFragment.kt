@@ -12,10 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.instaclon.models.Post
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_create_post.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -81,33 +78,22 @@ class CreatePostFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_send) {
-            // 이미지 업로드
-            imageUri.value?.let { uri ->
-
-                val stream = requireContext().contentResolver.openInputStream(uri)
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val downloadUri = viewModel.uploadImage(stream!!)
-                    viewModel.createPost(
-                        Post(
-                            "a811219@gmail.com",
-                            FirebaseAuth.getInstance().currentUser?.email,
-                            FirebaseAuth.getInstance().currentUser?.photoUrl?.toString(),
-
-                            downloadUri.toString(),
-                            editText.text.toString()
-                        )
-                    )
-
-                    requireActivity().finish()
-                }
-
-            }
-
-            // 업로드 결과를 DB에 작성
+            uploadPost()
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun uploadPost() {
+        imageUri.value?.let { uri ->
+
+            val stream = requireContext().contentResolver.openInputStream(uri)
+
+            lifecycleScope.launch {
+                viewModel.uploadPostAsync(stream!!, editText.text.toString())
+                requireActivity().finish()
+            }
+        }
     }
 
     companion object {

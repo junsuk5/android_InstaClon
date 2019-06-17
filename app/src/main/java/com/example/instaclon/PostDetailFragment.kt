@@ -11,7 +11,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.ChangeImageTransform
 import com.example.instaclon.databinding.FragmentPostDetailBinding
 import kotlinx.android.synthetic.main.fragment_post_detail.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -47,10 +46,9 @@ class PostDetailFragment : Fragment() {
                 val post = args.post
                 post.description = description_edit.text.toString()
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.updatePost(post) {
-                        requireActivity().finish()
-                    }
+                lifecycleScope.launch {
+                    viewModel.updatePost(post)
+                    requireActivity().finish()
                 }
 
                 return@setOnEditorActionListener true

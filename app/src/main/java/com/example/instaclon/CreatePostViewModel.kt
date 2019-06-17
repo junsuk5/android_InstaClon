@@ -1,16 +1,12 @@
 package com.example.instaclon
 
-import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.instaclon.models.Post
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import kotlinx.coroutines.tasks.await
 import java.io.InputStream
 
 class CreatePostViewModel : ViewModel() {
@@ -22,37 +18,32 @@ class CreatePostViewModel : ViewModel() {
         isProgress.value = false
     }
 
-    fun uploadImage(stream: InputStream): Uri {
+    suspend fun uploadPostAsync(stream: InputStream, text: String) {
         isProgress.postValue(true)
         val ref = FirebaseStorage.getInstance().reference
             .child("images/${System.currentTimeMillis()}.jpg")
 
-        return Tasks.await(ref.putStream(stream).continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
-                }
-            }
-            isProgress.postValue(false)
-            return@Continuation ref.downloadUrl
-        }))
+        ref.putStream(stream).await()
+
+        val downloadUri = ref.downloadUrl.await()
+
+        val post = Post(
+            "a811219@gmail.com",
+            FirebaseAuth.getInstance().currentUser?.email,
+            FirebaseAuth.getInstance().currentUser?.photoUrl?.toString(),
+            downloadUri.toString(),
+            text
+        )
+
+        db.collection("insta_posts").add(post).await()
+
+        isProgress.postValue(false)
     }
 
-    fun createPost(post: Post): DocumentReference {
+    suspend fun updatePost(post: Post) {
         isProgress.postValue(true)
-        return Tasks.await(db.collection("insta_posts").add(post).addOnCompleteListener {
-            isProgress.postValue(false)
-        })
-    }
-
-    fun updatePost(post: Post, callback: () -> Unit) {
-        isProgress.postValue(true)
-
-        db.collection("insta_posts").document(post.uid).set(post).addOnCompleteListener {
-            isProgress.postValue(false)
-
-            callback.invoke()
-        }
+        db.collection("insta_posts").document(post.uid).set(post).await()
+        isProgress.postValue(false)
     }
 
     fun deletePost(post: Post, callback: () -> Unit) {
