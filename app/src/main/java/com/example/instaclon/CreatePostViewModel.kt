@@ -46,12 +46,9 @@ class CreatePostViewModel : ViewModel() {
         isProgress.postValue(false)
     }
 
-    fun deletePost(post: Post, callback: () -> Unit) {
+    suspend fun deletePost(post: Post) {
         isProgress.postValue(true)
 
-        db.collection("insta_posts").document(post.uid).delete()
-            .addOnCompleteListener {
-                callback.invoke()
-            }
+        db.collection("insta_posts").document(post.uid).delete().await()
     }
 }

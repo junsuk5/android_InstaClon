@@ -65,8 +65,11 @@ class PostDetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_delete -> viewModel.deletePost(args.post) {
-                requireActivity().finish()
+            R.id.action_delete -> {
+                lifecycleScope.launch {
+                    viewModel.deletePost(args.post)
+                    requireActivity().finish()
+                }
             }
         }
         return super.onOptionsItemSelected(item)
